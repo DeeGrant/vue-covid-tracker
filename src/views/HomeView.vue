@@ -5,6 +5,11 @@
     <DataBoxes :stats="stats"></DataBoxes>
 
     <CountrySelect @get-country="setStats" :countries="countries"></CountrySelect>
+
+    <button
+        @click="setGlobalStats"
+        v-if="stats.Country"
+        class="bg-green-700 text-white rounded p-3 mt-10 focus:outline-none hover:bg-green-600">View Global Summary</button>
   </main>
   <main class="flex flex-col align-center justify-center text-center" v-else>
     <div class="text-gray-500 text-3xl mt-10 mb-6">
@@ -44,15 +49,23 @@ export default {
     setStats(country) {
       this.stats = country
       this.title = country.Country
+    },
+    async setGlobalStats() {
+      this.loading = true
+
+      const data = await this.fetchCovidData()
+      this.title = 'Global'
+      this.stats = data.Global
+
+      this.loading = false
     }
   },
   async created() {
     const data = await this.fetchCovidData()
-    // console.log(data)
     this.dataDate = data.Date
     this.stats = data.Global
-    this.countries = data.Countries //data.Countries.map(data => data.Country)
-    // console.log(this.countries)
+    this.countries = data.Countries
+
     this.loading = false
   }
 }
