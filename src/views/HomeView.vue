@@ -36,6 +36,7 @@ export default {
       loading: true,
       title: 'Global',
       dataDate: '',
+      dataFetch: undefined,
       stats: {},
       countries: [],
       loadingImage: require('../assets/hourglass.gif')
@@ -43,28 +44,29 @@ export default {
   },
   methods: {
     async fetchCovidData() {
+      this.loading = true
+
       const res = await fetch('https://api.covid19api.com/summary')
-      return await res.json()
+      this.dataFetch = await res.json()
     },
     setStats(country) {
       this.stats = country
       this.title = country.Country
     },
-    async setGlobalStats() {
+    setGlobalStats() {
       this.loading = true
 
-      const data = await this.fetchCovidData()
       this.title = 'Global'
-      this.stats = data.Global
+      this.stats = this.dataFetch.Global
 
       this.loading = false
     }
   },
   async created() {
-    const data = await this.fetchCovidData()
-    this.dataDate = data.Date
-    this.stats = data.Global
-    this.countries = data.Countries
+    await this.fetchCovidData()
+    this.dataDate = this.dataFetch.Date
+    this.stats = this.dataFetch.Global
+    this.countries = this.dataFetch.Countries
 
     this.loading = false
   }
