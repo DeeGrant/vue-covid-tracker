@@ -3,6 +3,8 @@
     <DataTitle :text="title" :data-date="dataDate"></DataTitle>
 
     <DataBoxes :stats="stats"></DataBoxes>
+
+    <CountrySelect @get-country="setStats" :countries="countries"></CountrySelect>
   </main>
   <main class="flex flex-col align-center justify-center text-center" v-else>
     <div class="text-gray-500 text-3xl mt-10 mb-6">
@@ -15,12 +17,14 @@
 <script>
 import DataTitle from "@/components/DataTitle";
 import DataBoxes from "@/components/DataBoxes";
+import CountrySelect from "@/components/CountrySelect";
 
 export default {
   name: 'HomeView',
   components: {
     DataBoxes,
-    DataTitle
+    DataTitle,
+    CountrySelect
   },
   data() {
     return {
@@ -36,15 +40,19 @@ export default {
     async fetchCovidData() {
       const res = await fetch('https://api.covid19api.com/summary')
       return await res.json()
+    },
+    setStats(country) {
+      this.stats = country
+      this.title = country.Country
     }
   },
   async created() {
     const data = await this.fetchCovidData()
-    console.log(data)
+    // console.log(data)
     this.dataDate = data.Date
     this.stats = data.Global
-    this.countries = data.Countries.map(data => data.Country)
-    console.log(this.countries)
+    this.countries = data.Countries //data.Countries.map(data => data.Country)
+    // console.log(this.countries)
     this.loading = false
   }
 }
